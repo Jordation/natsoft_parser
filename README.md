@@ -28,6 +28,8 @@ The latest release can be downloaded from the releases section of this repo (on 
 
 ![Entering Links](testdata/readme_img/enter.jpg) 
 
+- The app will just close on its own if it finished with no errors
+
 # Errors
 
 The links Natsoft generates are temporary and expire anywhere between 1 and 5 minutes, if a link dies it will be reported like so and no output will be generated for it as there is no way to get the page back (you can just re-load it yourself for a fresh link though)

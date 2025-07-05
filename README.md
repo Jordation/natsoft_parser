@@ -16,27 +16,25 @@ The latest release can be downloaded from the releases section of this repo (on 
  `go build -ldflags="-s -w" -o bin/n2s.exe .`
 
 
-# Data ExampLe
-
-## Results
-
-  ![Results data as csv](testdata/readme_img/results.webp) 
-
-## Lap Times
-
-  ![Lap Times data as csv](testdata/readme_img/laptimes.webp) 
-
 
 # Usage
 
-- Run the exe, you can double click or run it from a terminal
- ![Expected screen after exe opens](testdata/readme_img/begin.webp) 
+>Run the exe, you can double click or run it from a terminal
+![Expected screen after exe opens](testdata/readme_img/begin.webp) 
 
 
-- Paste links 1 by 1 and type **s** **s**top entering links and being the conversions
- ![Entering Links](testdata/readme_img/enter.webp) 
+> Paste links 1 by 1 and type s then enter to being the translations
+![Entering Links](testdata/readme_img/enter.webp) 
 
 # Errors
 
 The links Natsoft generates are temporary and expire anywhere between 1 and 5 minutes, if a link dies it will be reported like so and no output will be generated for it as there is no way to get the page back (you can just re-load it yourself for a fresh link though)
  ![Error](testdata/readme_img/error.webp) 
+
+# Data Example
+
+Results
+![Results data as csv](testdata/readme_img/results.webp) 
+
+Lap Times
+![Lap Times data as csv](testdata/readme_img/laptimes.webp) 

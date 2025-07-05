@@ -30,9 +30,10 @@ func TestResultParse(t *testing.T) {
 				colly.Async(false),
 			)
 
-			entries, _ := translateResultPage(
-				srv.URL+urlSplitter+test.pathExt+".html", testc,
-			)
+			entries, _, err := translateResultPage(srv.URL+urlSplitter+test.pathExt+".html", testc)
+			if err != nil {
+				t.Fatalf("failed to translate page:%s", err)
+			}
 
 			if err := writeCsv(entries, "testdata/results/output_"+test.pathExt+".csv"); err != nil {
 				t.Fatalf("failed to write result csv:%s", err)
@@ -61,7 +62,10 @@ func TestTimesParse(t *testing.T) {
 				colly.Async(false),
 			)
 
-			entries, _ := translateTimesPage(srv.URL+urlSplitter+test.pathExt+".html", testc)
+			entries, _, err := translateTimesPage(srv.URL+urlSplitter+test.pathExt+".html", testc)
+			if err != nil {
+				t.Fatalf("failed to translate page:%s", err)
+			}
 
 			if err := writeCsv(entries, "testdata/lap_times/output_"+test.pathExt+".csv"); err != nil {
 				t.Fatalf("failed to write result csv:%s", err)

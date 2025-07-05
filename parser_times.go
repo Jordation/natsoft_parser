@@ -7,19 +7,19 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-func translateTimesPage(url string, collector *colly.Collector) ([][]string, string) {
+func translateTimesPage(url string, collector *colly.Collector) ([][]string, string, error) {
 	ctx := &timesCtx{}
 	registerTimesHandlers(collector, ctx)
 
 	if err := collector.Visit(url); err != nil {
-		confirmFatal("fatal err: URL(%s) not available, probably expired and will need to re-visit the link\n", url)
+		return nil, "", fmt.Errorf("failed to visit URL, probably expired:%w", err)
 	}
 
 	driverTimes := translateRawLaptimes(ctx.rawDriverTimes)
 
 	writables := translateTimesToCSV(driverTimes)
 
-	return writables, fileNameFromTitleData(ctx.titleData, "LapTimes")
+	return writables, fileNameFromTitleData(ctx.titleData, "LapTimes"), nil
 }
 
 func translateTimesToCSV(times []*DriverTimes) [][]string {
@@ -148,13 +148,12 @@ func translateRawLaptimes(rawTimes []string) []*DriverTimes {
 
 		driverNumName, timingData, ok := strings.Cut(rawData, "\n")
 		if !ok {
-			debug("couldn't cut the raw timing data as expected:\n%s\n--------", rawData)
 			continue
 		}
 
 		driverTimes := &DriverTimes{}
 
-		num, name, _ := strings.Cut(driverNumName, " ")
+		num, name, _ := strings.Cut(strings.TrimSpace(driverNumName), " ")
 		driverTimes.DriverNumber = clean(num)
 		driverTimes.DriverName = clean(name)
 

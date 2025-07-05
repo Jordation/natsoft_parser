@@ -4,13 +4,20 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
 )
+
+var log *slog.Logger
+
+func init() {
+	log = slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+}
 
 func main() {
 	fmt.Printf("Paste one URL at a time and press enter, type s and then enter to stop adding URLs run the script\n-------------\n")
@@ -38,23 +45,30 @@ func main() {
 		var (
 			csvData  [][]string
 			fileName string
+			err      error
 		)
 
 		switch true {
 		case strings.Contains(url, "Result"):
-			csvData, fileName = translateResultPage(url, c)
+			csvData, fileName, err = translateResultPage(url, c)
 		case strings.Contains(url, "Times"):
-			csvData, fileName = translateTimesPage(url, c)
+			csvData, fileName, err = translateTimesPage(url, c)
 		default:
-			log.Default().Printf("unhandled URL type, URL:%s", url)
+			log.Info("unhandled URL type", "URL", url)
+			continue
+		}
+
+		if err != nil {
+			log.Error("failed to translate, skipping", "URL", url, "error", err)
 			continue
 		}
 
 		if err := writeCsv(csvData, fileName); err != nil {
-			confirmFatal("Error writing CSV:%s", err)
+			log.Info("Error writing CSV", "err", err.Error(), "filename", fileName)
+			continue
 		}
 
-		slog.Info("Successfully parsed %s results and saved to %s\n", url, fileName)
+		log.Info("Successfully parsed results and saved file", "file name", fileName, "url", url)
 	}
 }
 
@@ -72,10 +86,6 @@ func writeCsv(entries [][]string, fileName string) error {
 	return csv.NewWriter(file).WriteAll(entries)
 }
 
-func debug(fmt string, args ...any) {
-	slog.Debug("[DEBUG]: "+fmt, args...)
-}
-
 func isTitleData(s string) bool {
 	return strings.Contains(strings.ToLower(s), "race") ||
 		strings.Contains(strings.ToLower(s), "qual") ||
@@ -86,11 +96,4 @@ func fileNameFromTitleData(s, dataType string) string {
 	s = strings.ReplaceAll(s, "-", "")
 	s = strings.ReplaceAll(s, " ", "")
 	return s + "_" + dataType + ".csv"
-}
-
-func confirmFatal(fmt string, args ...any) {
-	slog.Info(fmt, args...)
-	slog.Info("Fatal Error, press enter to exit...")
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
-	os.Exit(1)
 }

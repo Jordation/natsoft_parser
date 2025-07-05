@@ -1,19 +1,19 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"slices"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
 )
 
-func translateResultPage(url string, collector *colly.Collector) ([][]string, string) {
+func translateResultPage(url string, collector *colly.Collector) ([][]string, string, error) {
 	ctx := &resultsCtx{}
 	registerHandlers(collector, ctx)
 
 	if err := collector.Visit(url); err != nil {
-		confirmFatal("fatal err: URL(%s) not available, probably expired and will need to re-visit the link\n", url)
+		return nil, "", fmt.Errorf("failed to visit URL, probably expired:%w", err)
 	}
 
 	fields, fieldLine := parseRawFields(ctx.rawData)
@@ -22,14 +22,14 @@ func translateResultPage(url string, collector *colly.Collector) ([][]string, st
 
 	results := convertRawResults(fieldLine, fields, stats)
 
-	return translateResultsToCSV(results), fileNameFromTitleData(ctx.titleData, "Results")
+	return translateResultsToCSV(results), fileNameFromTitleData(ctx.titleData, "Results"), nil
 }
 
 func parseRawFields(rawData string) ([]*resultField, string) {
 	res := []*resultField{}
 	lines := strings.Split(rawData, "\n")
 	if len(lines) == 0 {
-		confirmFatal("PARSER_ERR: no newline to split raw timing data:%s", rawData)
+		log.Info("PARSER_ERR: no newline to split raw timing data", "RawData", rawData)
 	}
 
 	// garbage trimming
@@ -117,11 +117,6 @@ func convertRawResults(header string, rawFields []*resultField, rawStats []strin
 			}
 
 			if f.firstCharIndex > len(rawStatLine) {
-				debug("--------------------------------")
-				debug("Missing Stat: %s", f.fieldName)
-				debug(header)
-				debug(rawStatLine)
-				debug("--------------------------------")
 				continue
 			}
 
@@ -165,7 +160,7 @@ func assignResults(fieldName, value string, to *Results) {
 	case "Gap":
 		to.Gap = cleaned
 	default:
-		log.Default().Printf("unhandled field:%s : %s", fieldName, cleaned)
+		log.Info("unhandled field", "fieldName", fieldName, "cleaned value", cleaned)
 	}
 }
 

@@ -19,12 +19,14 @@ The latest release can be downloaded from the releases section of this repo (on 
 
 # Usage
 
->Run the exe, you can double click or run it from a terminal
-![Expected screen after exe opens](testdata/readme_img/begin.webp) 
+- Run the exe, you can double click or run it from a terminal
+
+![Expected screen after exe opens](testdata/readme_img/begin.jpg) 
 
 
-> Paste links 1 by 1 and type s then enter to being the translations
-![Entering Links](testdata/readme_img/enter.webp) 
+- Paste links 1 by 1 and type s then enter to being the translations
+
+![Entering Links](testdata/readme_img/enter.jpg) 
 
 # Errors
 

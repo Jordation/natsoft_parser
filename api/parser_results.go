@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -8,12 +8,12 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-func translateResultPage(url string, collector *colly.Collector) ([][]string, string, error) {
+func (p *parserClient) translateResultPage(url string) ([][]string, string, error) {
 	ctx := &resultsCtx{}
-	registerHandlers(collector, ctx)
+	registerHandlers(p.collector, ctx)
 
-	if err := collector.Visit(url); err != nil {
-		return nil, "", fmt.Errorf("failed to visit URL, probably expired:%w", err)
+	if err := p.collector.Visit(url); err != nil {
+		return nil, "", fmt.Errorf("failed to visit URL, err reason: URL %w", err)
 	}
 
 	fields, fieldLine := parseRawFields(ctx.rawData)

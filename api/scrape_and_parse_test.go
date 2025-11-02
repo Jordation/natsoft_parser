@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"net/http"
@@ -7,8 +7,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/gocolly/colly/v2"
 )
 
 func TestResultParse(t *testing.T) {
@@ -24,18 +22,16 @@ func TestResultParse(t *testing.T) {
 
 	time.Sleep(time.Second / 100)
 
+	parser := NewParser()
+
 	for _, test := range tests {
 		t.Run("test for file: "+test.pathExt, func(t *testing.T) {
-			testc := colly.NewCollector(
-				colly.Async(false),
-			)
-
-			entries, _, err := translateResultPage(srv.URL+urlSplitter+test.pathExt+".html", testc)
+			entries, _, err := parser.Parse(srv.URL + urlSplitter + test.pathExt + ".html")
 			if err != nil {
 				t.Fatalf("failed to translate page:%s", err)
 			}
 
-			if err := writeCsv(entries, "testdata/results/output_"+test.pathExt+".csv"); err != nil {
+			if err := parser.WriteEntriesTo(entries, "testdata/results/output_"+test.pathExt+".csv"); err != nil {
 				t.Fatalf("failed to write result csv:%s", err)
 			}
 		})
@@ -56,18 +52,16 @@ func TestTimesParse(t *testing.T) {
 
 	time.Sleep(time.Second / 100)
 
+	parser := NewParser()
+
 	for _, test := range tests {
 		t.Run("test for file: "+test.pathExt, func(t *testing.T) {
-			testc := colly.NewCollector(
-				colly.Async(false),
-			)
-
-			entries, _, err := translateTimesPage(srv.URL+urlSplitter+test.pathExt+".html", testc)
+			entries, _, err := parser.Parse(srv.URL + urlSplitter + test.pathExt + ".html")
 			if err != nil {
 				t.Fatalf("failed to translate page:%s", err)
 			}
 
-			if err := writeCsv(entries, "testdata/lap_times/output_"+test.pathExt+".csv"); err != nil {
+			if err := parser.WriteEntriesTo(entries, "testdata/lap_times/output_"+test.pathExt+".csv"); err != nil {
 				t.Fatalf("failed to write result csv:%s", err)
 			}
 

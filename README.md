@@ -13,7 +13,7 @@ The latest release can be downloaded from the releases section of this repo (on 
 
  `git clone https://github.com/Jordation/natsoft_parser.git n2s && cd n2s`
 
- `go build -ldflags="-s -w" -o bin/n2s.exe .`
+ `go build cmd/main.go -ldflags="-s -w" -o bin/n2s.exe .`
 
 
 

@@ -1,4 +1,4 @@
-package main
+package api
 
 type resultField struct {
 	firstCharIndex int

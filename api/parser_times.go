@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -7,12 +7,13 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-func translateTimesPage(url string, collector *colly.Collector) ([][]string, string, error) {
+func (p *parserClient) translateTimesPage(url string) ([][]string, string, error) {
 	ctx := &timesCtx{}
-	registerTimesHandlers(collector, ctx)
+	registerTimesHandlers(p.collector, ctx)
 
-	if err := collector.Visit(url); err != nil {
-		return nil, "", fmt.Errorf("failed to visit URL, probably expired:%w", err)
+	err := p.collector.Visit(url)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to visit URL:%w", err)
 	}
 
 	driverTimes := translateRawLaptimes(ctx.rawDriverTimes)

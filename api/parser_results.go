@@ -10,9 +10,10 @@ import (
 
 func (p *parserClient) translateResultPage(url string) ([][]string, string, error) {
 	ctx := &resultsCtx{}
-	registerHandlers(p.collector, ctx)
+	collector := colly.NewCollector(colly.Async(false))
+	registerHandlers(collector, ctx)
 
-	if err := p.collector.Visit(url); err != nil {
+	if err := collector.Visit(url); err != nil {
 		return nil, "", fmt.Errorf("failed to visit URL, err reason: URL %w", err)
 	}
 

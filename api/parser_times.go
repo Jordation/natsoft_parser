@@ -9,9 +9,10 @@ import (
 
 func (p *parserClient) translateTimesPage(url string) ([][]string, string, error) {
 	ctx := &timesCtx{}
-	registerTimesHandlers(p.collector, ctx)
+	collector := colly.NewCollector(colly.Async(false))
+	registerTimesHandlers(collector, ctx)
 
-	err := p.collector.Visit(url)
+	err := collector.Visit(url)
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to visit URL:%w", err)
 	}
@@ -182,7 +183,7 @@ func translateRawLaptimes(rawTimes []string) []*DriverTimes {
 
 func isTimingData(s string) bool {
 	//  0:50.8840 || -:--.----p || *:**.****
-	return strings.Contains(s, ":") && strings.Contains(s, ".") || isNotCountedTime(s) || isPitstopData(s)
+	return (strings.Contains(s, ":") && strings.Contains(s, ".")) || isNotCountedTime(s) || isPitstopData(s)
 }
 
 func isPitstopData(s string) bool {
@@ -190,9 +191,5 @@ func isPitstopData(s string) bool {
 }
 
 func isNotCountedTime(s string) bool {
-	if s == "NOT-COUNTED" {
-		fmt.Println("what da helly")
-		return true
-	}
-	return false
+	return s == "NOT-COUNTED"
 }

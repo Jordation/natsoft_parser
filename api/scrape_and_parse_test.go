@@ -11,6 +11,7 @@ import (
 
 func TestResultParse(t *testing.T) {
 	const urlSplitter = "/*"
+	const testType = "Results"
 	tests := []*struct {
 		pathExt string
 	}{
@@ -18,7 +19,7 @@ func TestResultParse(t *testing.T) {
 		{"3"}, {"4"}, {"5"},
 	}
 
-	srv := setupTestSrv(t, "testdata/results", "result")
+	srv := setupTestSrv(t, "testdata/results", testType)
 
 	time.Sleep(time.Second / 100)
 
@@ -26,7 +27,7 @@ func TestResultParse(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run("test for file: "+test.pathExt, func(t *testing.T) {
-			entries, _, err := parser.Parse(srv.URL + urlSplitter + test.pathExt + ".html")
+			entries, _, err := parser.Parse(srv.URL + "/" + testType + urlSplitter + test.pathExt + ".html")
 			if err != nil {
 				t.Fatalf("failed to translate page:%s", err)
 			}
@@ -41,6 +42,7 @@ func TestResultParse(t *testing.T) {
 
 func TestTimesParse(t *testing.T) {
 	const urlSplitter = "/*"
+	const testType = "Times"
 	tests := []*struct {
 		pathExt string
 	}{
@@ -48,7 +50,7 @@ func TestTimesParse(t *testing.T) {
 		{"3"}, {"4"}, {"5"},
 	}
 
-	srv := setupTestSrv(t, "testdata/lap_times", "times")
+	srv := setupTestSrv(t, "testdata/lap_times", testType)
 
 	time.Sleep(time.Second / 100)
 
@@ -56,7 +58,7 @@ func TestTimesParse(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run("test for file: "+test.pathExt, func(t *testing.T) {
-			entries, _, err := parser.Parse(srv.URL + urlSplitter + test.pathExt + ".html")
+			entries, _, err := parser.Parse(srv.URL + "/" + testType + urlSplitter + test.pathExt + ".html")
 			if err != nil {
 				t.Fatalf("failed to translate page:%s", err)
 			}
@@ -64,7 +66,6 @@ func TestTimesParse(t *testing.T) {
 			if err := parser.WriteEntriesTo(entries, "testdata/lap_times/output_"+test.pathExt+".csv"); err != nil {
 				t.Fatalf("failed to write result csv:%s", err)
 			}
-
 		})
 	}
 

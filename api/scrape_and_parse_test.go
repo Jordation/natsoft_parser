@@ -32,7 +32,18 @@ func TestResultParse(t *testing.T) {
 				t.Fatalf("failed to translate page:%s", err)
 			}
 
-			if err := parser.WriteEntriesTo(entries, "testdata/results/output_"+test.pathExt+".csv"); err != nil {
+			fileName := "testdata/results/output_" + test.pathExt + ".csv"
+			file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0644)
+			if err != nil {
+				t.Fatal("failed opening file:", "err", err.Error(), "filename", fileName)
+			}
+			defer file.Close()
+
+			if err := file.Truncate(0); err != nil {
+				t.Fatal("failed to truncate fail", "err", err.Error(), "filename", fileName)
+			}
+
+			if err := parser.WriteEntriesTo(entries, file); err != nil {
 				t.Fatalf("failed to write result csv:%s", err)
 			}
 		})
@@ -63,7 +74,18 @@ func TestTimesParse(t *testing.T) {
 				t.Fatalf("failed to translate page:%s", err)
 			}
 
-			if err := parser.WriteEntriesTo(entries, "testdata/lap_times/output_"+test.pathExt+".csv"); err != nil {
+			fileName := "testdata/results/output_" + test.pathExt + ".csv"
+			file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0644)
+			if err != nil {
+				t.Fatal("failed opening file:", "err", err.Error(), "filename", fileName)
+			}
+			defer file.Close()
+
+			if err := file.Truncate(0); err != nil {
+				t.Fatal("failed to truncate fail", "err", err.Error(), "filename", fileName)
+			}
+
+			if err := parser.WriteEntriesTo(entries, file); err != nil {
 				t.Fatalf("failed to write result csv:%s", err)
 			}
 		})

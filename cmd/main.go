@@ -45,7 +45,19 @@ func main() {
 			continue
 		}
 
-		if err := parser.WriteEntriesTo(csvData, fileName); err != nil {
+		file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0644)
+		if err != nil {
+			log.Info("failed opening file:", "err", err.Error(), "filename", fileName)
+			continue
+		}
+		defer file.Close()
+
+		if err := file.Truncate(0); err != nil {
+			log.Info("failed to truncate fail", "err", err.Error(), "filename", fileName)
+			continue
+		}
+
+		if err := parser.WriteEntriesTo(csvData, file); err != nil {
 			log.Info("Error writing CSV", "err", err.Error(), "filename", fileName)
 			continue
 		}

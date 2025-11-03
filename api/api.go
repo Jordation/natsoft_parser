@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/csv"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"strings"
@@ -18,7 +19,7 @@ func init() {
 
 type Parser interface {
 	Parse(url string) (csvData [][]string, fileName string, err error)
-	WriteEntriesTo(csvData [][]string, fileName string) error
+	WriteEntriesTo(csvData [][]string, writer io.Writer) error
 }
 
 func NewParser() Parser {
@@ -47,20 +48,8 @@ func (p *parserClient) Parse(url string) (csvData [][]string, fileName string, e
 	return csvData, fileName, nil
 }
 
-func (p *parserClient) WriteEntriesTo(csvData [][]string, fileName string) error {
-	file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0644)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	if err := file.Truncate(0); err != nil {
-		return err
-	}
-
-	writer := csv.NewWriter(file)
-
-	return writer.WriteAll(csvData)
+func (p *parserClient) WriteEntriesTo(csvData [][]string, writer io.Writer) error {
+	return csv.NewWriter(writer).WriteAll(csvData)
 }
 
 func isTitleData(s string) bool {
